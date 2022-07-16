@@ -10,7 +10,6 @@ const renderToast =
     //   // hideProgressBar: true,
     // }
   ) => {
-    console.log("===toasin")
     toast?.[type](msg);
     return;
   };
