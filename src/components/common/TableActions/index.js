@@ -8,7 +8,7 @@ const TableActions = ({ actionsList, id }) => {
     <div
       key={id}
       className={
-        actionsList.length > 1 ? "justify-content-left align-item-center" : ""
+        actionsList.length > 1 ? "flex flex-row justify-between min-h-full" : ""
       }
     >
       {actionsList.map(({ type, Icon, tooltipLabel, onClick, color, id }) => {
@@ -16,8 +16,8 @@ const TableActions = ({ actionsList, id }) => {
         switch (type) {
           case "button":
             return (
-              <Fragment key={uniqueKey}>
-                {uniqueKey===currentActionHover && (
+              <div key={uniqueKey}>
+                {uniqueKey === currentActionHover && (
                   <Tooltip place={"left"} id={uniqueKey}>
                     {tooltipLabel}
                   </Tooltip>
@@ -28,13 +28,12 @@ const TableActions = ({ actionsList, id }) => {
                   onClick={onClick}
                   onMouseEnter={() => setCurrentActionHover(uniqueKey)}
                   onMouseLeave={() => {
-                    setCurrentActionHover('');
-                    // setTimeout(() => showTooltip(true), 50);
+                    setCurrentActionHover("");
                   }}
                 >
                   {!!Icon && <Icon color={color} />}
                 </button>
-              </Fragment>
+              </div>
             );
 
           default:

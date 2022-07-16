@@ -1,11 +1,13 @@
 import { DataTable } from "../../common";
 import { useNavigate } from "react-router-dom";
-import { svgIcons, TableActions } from "../../common";
+import { TableActions } from "../../common";
+import { MdEdit, MdDelete } from "../../common/svg-icons";
 import { ClientsColumns } from "../../../constants/DataTableColumnConfigs";
 import { CLIENT_PATH_EDIT } from "../../../constants/appPaths";
 import { getTableColumns } from "../../../utils/DataTableHelper";
+import moment from "moment";
 
-const ClientsTable = ({ loading, error, listings }) => {
+const ClientsTable = ({ loading, error, listings, onDeleteClient }) => {
   const navigate = useNavigate();
 
   const getClientList = () => {
@@ -15,32 +17,26 @@ const ClientsTable = ({ loading, error, listings }) => {
         ID: client.id,
         "First Name": client.first_name || "–",
         "Last Name": client.last_name || "–",
-        "Gender": client.gender || "–",
-        "Position": client.position || "–",
-        "Evaluation": client.evaluation || "–",
-        "Starting Date": client.starting_date || "–",
-        "Status":
-         (
-           // <Status
-           //   name={client?.status}
-           //   color={statusColorMapper(client?.status)}
-           // />
-           <div>{client?.status}</div>
-         ) || "–",
+        Gender: client.gender || "–",
+        Position: client.position || "–",
+        Evaluation: client.evaluation || "–",
+        "Starting Date":
+          moment(client.starting_date).format("MMM-DD,YY") || "–",
+        Status: <div>{client?.status}</div> || "–",
         "Contact Number": client.contact_number || "–",
         "Emergency Number": client.emergency_contact || "–",
-        "Notes": client.notes || "–",
-        "Actions": (
+        Notes: client.notes || "–",
+        ["Actions"]: (
           <TableActions
             id={client.id}
             actionsList={[
               {
                 id: client.id,
                 type: "button",
-                Icon: svgIcons.MdEdit,
+                Icon: MdEdit,
                 color: "green",
                 tooltipLabel: "Edit",
-                onclick: () => {
+                onClick: () => {
                   navigate({
                     pathname: CLIENT_PATH_EDIT.replace(":id", client.id),
                   });
@@ -49,10 +45,12 @@ const ClientsTable = ({ loading, error, listings }) => {
               {
                 id: client.id,
                 type: "button",
-                Icon: svgIcons.MdDelete,
+                Icon: MdDelete,
                 color: "red",
                 tooltipLabel: "Delete",
-                onclick: () => {},
+                onClick: () => {
+                  onDeleteClient(client.id);
+                },
               },
             ]}
           />
@@ -72,6 +70,7 @@ const ClientsTable = ({ loading, error, listings }) => {
       tableData={updatedClientsList}
       columns={columnsToRender}
       loading={loading}
+      onRowClicked={(row) => navigate(CLIENT_PATH_EDIT.replace(":id", row.ID))}
     />
   );
 };

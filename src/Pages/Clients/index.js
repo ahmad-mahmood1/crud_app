@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import ClientsTable from "../../components/Clients/ClientsTable";
-import { Button } from "../../components/common";
-import { getClientsList } from "../../NetworkServices/ApiBuilder";
+import { Button, Toast } from "../../components/common";
+import { CLIENTS_PATH_NEW } from "../../constants/appPaths";
+import { MdAdd } from "../../components/common/svg-icons";
+import network from "../../NetworkServices/network";
 
-export const Clients = (props) => {
+const Clients = (props) => {
   const [clients, setClients] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const fetchClients = async () => {
-    setLoading(true);
-    const response = await getClientsList();
+    const response = await network.getClientsList();
     setLoading(false);
 
     if (response.errorMsg) {
@@ -21,10 +23,33 @@ export const Clients = (props) => {
     fetchClients();
   }, []);
 
+  const onDeleteClient = async (clientId) => {
+    const deleteClientResponse = await network.deleteClient(clientId);
+
+    if (deleteClientResponse.errorMsg) {
+      Toast.error(deleteClientResponse.errorMsg);
+    } else {
+      setClients(clients.filter((client) => client.id !== clientId));
+      Toast.success("Client Deleted Successfully");
+    }
+  };
+
   return (
     <>
-      <Button btnText={"Add Client"} />
-      <ClientsTable listings={clients} error={error} loading={loading} />
+      <div className="flex flex-row-reverse">
+        <Button
+          btnText={"Add Client"}
+          onClick={() => navigate(CLIENTS_PATH_NEW)}
+          icon={<MdAdd />}
+        />
+      </div>
+      <ClientsTable
+        listings={clients}
+        error={error}
+        onDeleteClient={onDeleteClient}
+        loading={loading}
+      />
     </>
   );
 };
+export default Clients;

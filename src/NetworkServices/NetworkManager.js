@@ -16,7 +16,6 @@ export default class NetworkManager {
       ...(data && { data: data }),
       ...(setHeaders ? { headers: getHeaders() } : {}),
     };
-
     return new Promise((resolve, reject) => {
       axios(config, {
         timeout: TIMEOUT,
